@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: 2026 Frank Winter
+# SPDX-License-Identifier: MIT
+#
+# Veröffentlicht die Projektwebseite (Verzeichnis www/) über GitHub Pages.
+# Voraussetzung: Settings → Pages → Source „GitHub Actions“.
+
+name: Release
+
+on:
+  release:
+    types: [published]
+  # Manuelles Neu-Deployment des aktuellen Stands (z.B. nach Änderung der Pages-Einstellungen)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Immer nur ein Deployment gleichzeitig; ein laufendes wird nicht abgebrochen
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/configure-pages@v6
+
+      # Kein Build-Schritt: www/ wird unverändert ausgeliefert.
+      # include-hidden-files, damit .well-known/security.txt mit veröffentlicht wird.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: www
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
