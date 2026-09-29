@@ -2,6 +2,22 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
+## [1.0.2] – 2026-09-29
+
+### Neu
+
+- Skript `scripts/capture-screenshots.mjs` erzeugt die Screenshots der App automatisch aus app.grundschutz-explorer.de mit dem aktuellen BSI-Katalog und festen Beispieldaten; die Bildmaße in der Startseite werden dabei nachgetragen.
+- Skript `scripts/release.py` bereitet ein Release vor: Version in Changelog und `scripts/package.json` setzen, `security.txt` erneuern, Screenshots neu aufnehmen.
+- Beschreibung der Skripte in `scripts/README.md`.
+
+### Geändert
+
+- Screenshots mit der aktuellen App-Version neu aufgenommen, in höherer Auflösung.
+
+### Entfernt
+
+- Ungenutzter Screenshot `listen-markierungen.webp`.
+
 ## [1.0.1] – 2026-09-29
 
 ### Geändert
