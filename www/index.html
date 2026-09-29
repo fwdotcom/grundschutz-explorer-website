@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<!--
+  SPDX-FileCopyrightText: 2026 Frank Winter
+  SPDX-License-Identifier: MIT
+
+  Projektwebseite Grundschutz++ Explorer.
+  Die App selbst liegt unter https://app.grundschutz-explorer.de/ (Links unten anpassen, falls sich die Adresse ändert).
+-->
+<html lang="de" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>Grundschutz++ Explorer – den BSI-Anwenderkatalog im Browser durchsuchen</title>
+  <meta name="description" content="Grundschutz++ Explorer macht den Anwenderkatalog Grundschutz++ des BSI durchsuchbar: Anforderungen finden, filtern, Listen mit Notizen führen und Katalogversionen vergleichen – Open Source, ohne Anmeldung, alle Daten bleiben lokal." />
+  <link rel="canonical" href="https://www.grundschutz-explorer.de/" />
+  <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0c0e13" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Grundschutz++ Explorer" />
+  <meta property="og:title" content="Grundschutz++ Explorer" />
+  <meta property="og:description" content="Den Grundschutz++-Anwenderkatalog durchsuchen, filtern und Versionen vergleichen – direkt im Browser, ohne Anmeldung, Open Source." />
+  <meta property="og:url" content="https://www.grundschutz-explorer.de/" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:image" content="https://www.grundschutz-explorer.de/media/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Grundschutz++ Explorer: Logo mit Schild und Lupe, Schriftzug und Adresse www.grundschutz-explorer.de" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/webp" href="media/gse_logo.webp" />
+  <link rel="apple-touch-icon" href="media/apple-touch-icon.png" />
+  <link rel="preload" href="fonts/open-sans-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="site.css" />
+  <script src="site.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <!-- Symbole (teilweise nach Lucide, ISC-Lizenz) -->
+  <svg class="sprite" width="0" height="0" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
+      <symbol id="i-tree" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12h-8M21 6H8M21 18h-8M3 6v4c0 1.1.9 2 2 2h3M3 10v6c0 1.1.9 2 2 2h3"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.3a.5.5 0 0 1 1 0l2.3 4.7a2 2 0 0 0 1.6 1.1l5.2.8a.5.5 0 0 1 .3.9l-3.8 3.6a2 2 0 0 0-.6 1.9l.9 5.2a.5.5 0 0 1-.8.6l-4.6-2.5a2 2 0 0 0-2 0l-4.6 2.5a.5.5 0 0 1-.8-.6l.9-5.2a2 2 0 0 0-.6-1.9L1.9 9.8a.5.5 0 0 1 .3-.9l5.2-.8A2 2 0 0 0 9 7l2.5-4.7z"/></symbol>
+      <symbol id="i-database" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+      <symbol id="i-diff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7M11 18H8a2 2 0 0 1-2-2V9"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/></symbol>
+      <symbol id="i-person-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6.5" r="3.5"/><path d="M2 21v-1.5A5.5 5.5 0 0 1 7.5 14H9"/><path d="M12 13h3a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0-1.5-1.5H12zM22 13h-3a2 2 0 0 0-2 2v6a1.5 1.5 0 0 1 1.5-1.5H22z"/></symbol>
+      <symbol id="i-team" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M7 20v-1a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v1"/><circle cx="5" cy="10" r="2"/><path d="M1 20v-.5A3.5 3.5 0 0 1 4.5 16"/><circle cx="19" cy="10" r="2"/><path d="M23 20v-.5a3.5 3.5 0 0 0-3.5-3.5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol>
+      <symbol id="i-browser" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M2 9h20M6 6.5h.01M9 6.5h.01"/></symbol>
+      <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61M14.12 14.12a3 3 0 1 1-4.24-4.24M2 2l20 20"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./" aria-label="Grundschutz++ Explorer – Startseite">
+        <img src="media/gse_logo.webp" alt="" width="34" height="34" />
+        <span>Grundschutz++ Explorer</span>
+      </a>
+      <nav id="site-nav" class="nav" aria-label="Hauptnavigation">
+        <a href="#funktionen">Funktionen</a>
+        <a href="#einblicke">Einblicke</a>
+        <a href="#datenschutz">Datenschutz</a>
+      </nav>
+      <div class="header-actions">
+        <a class="icon-btn" href="https://github.com/fwdotcom/grundschutz-explorer" title="Quellcode auf GitHub" aria-label="Quellcode auf GitHub">
+          <svg class="icon"><use href="#i-github"/></svg>
+        </a>
+        <button class="icon-btn theme-toggle" type="button" aria-label="Dunkles Design" aria-pressed="false">
+          <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+          <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Menü" aria-expanded="false" aria-controls="site-nav">
+          <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+        </button>
+        <a class="btn btn-primary btn-sm" href="https://app.grundschutz-explorer.de/">App starten</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ Hero ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-copy">
+          <img class="hero-logo" src="media/gse_logo.webp" alt="" width="120" height="120" />
+          <h1 id="hero-title">Grundschutz++<br /><span class="gradient-text">schneller erkunden.</span></h1>
+          <p class="lead">
+            Der Grundschutz++ Explorer macht den Anwenderkatalog des BSI im Browser durchsuchbar:
+            Anforderungen finden, flexibel filtern, Listen mit Notizen führen und Katalogversionen
+            Wort für Wort vergleichen.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="https://app.grundschutz-explorer.de/">
+              App starten
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="btn btn-secondary" href="https://app.grundschutz-explorer.de/docs/manual/">
+              <svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>
+              Handbuch (PDF)
+            </a>
+          </div>
+          <ul class="hero-points">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Ohne Anmeldung</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Daten bleiben lokal</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Open Source (MIT)</li>
+          </ul>
+        </div>
+
+        <div class="hero-shot">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <div class="frame-dots"><span></span><span></span><span></span></div>
+              <div class="frame-url">app.grundschutz-explorer.de</div>
+            </div>
+            <button class="shot-btn" type="button" aria-label="Screenshot vergrößern">
+              <img src="media/screens/oberflaeche.webp" width="1920" height="1200"
+                   alt="Oberfläche des Grundschutz++ Explorers mit Filterleiste, Baumansicht der Praktiken und Detailansicht der Anforderung DEV.3.4 Passwort-Hashing" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Kennzahlen ============ -->
+    <section class="stats" aria-label="Kennzahlen">
+      <div class="container">
+        <dl class="stats-grid">
+          <div class="stat"><dt>Anforderungen im Katalog</dt><dd>~1.000</dd></div>
+          <div class="stat"><dt>Filterbereiche</dt><dd>10+</dd></div>
+          <div class="stat"><dt>Cookies &amp; Tracker</dt><dd>0</dd></div>
+          <div class="stat"><dt>läuft im Browser</dt><dd>100 %</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============ Funktionen ============ -->
+    <section id="funktionen" class="section" aria-labelledby="funktionen-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">Funktionen</span>
+          <h2 id="funktionen-title">Alles, was Sie für die Arbeit mit dem Katalog brauchen</h2>
+          <p>Vom schnellen Nachschlagen einer Kennung bis zur eigenen Anforderungsliste – ohne Tabellenkalkulation und ohne PDF-Suche.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-tree"/></svg></div>
+            <h3>Navigieren</h3>
+            <p>Praktiken, Themen, Anforderungen und Unteranforderungen als Baum oder flache Trefferliste, mit Übersichten je Praktik und Thema.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></div>
+            <h3>Volltextsuche</h3>
+            <p>Über Kennungen, Titel, Anforderungstexte, Hilfestellungen und Gefährdungen – Treffer in Sekunden.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-filter"/></svg></div>
+            <h3>Filtern</h3>
+            <p>Nach Praktiken, Schutzbedarf, Zielobjekten, Modalverb, Handlungswort, Dokumentation, Tags, Schutzzielen, Aufwand und Gefährdungen – ein- oder ausschließend.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></div>
+            <h3>Listen mit Notizen</h3>
+            <p>Anforderungen per Stern sammeln, Notizen erfassen und Listen als JSON exportieren und importieren.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg></div>
+            <h3>Kataloge laden</h3>
+            <p>Den offiziellen Katalog direkt vom BSI oder andere Kataloge im Schema des Grundschutz++ als Datei oder über eine URL.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-diff"/></svg></div>
+            <h3>Versionsvergleich</h3>
+            <p>Zwei Katalogstände gegeneinander halten: neue, geänderte und gelöschte Anforderungen mit Wort-für-Wort-Unterschieden.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Einblicke ============ -->
+    <section id="einblicke" class="section section-alt" aria-labelledby="einblicke-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">Einblicke</span>
+          <h2 id="einblicke-title">So arbeiten Sie mit dem Explorer</h2>
+        </div>
+
+        <div class="split reveal">
+          <div class="split-copy">
+            <span class="kicker">Suchen &amp; Filtern</span>
+            <h2>Vom ganzen Katalog zu den Anforderungen, die Sie betreffen</h2>
+            <p>
+              Kombinieren Sie beliebig viele Filter – einschließend oder ausschließend. Aktive Filter erscheinen als
+              Chips über der Trefferliste, die Trefferzahl aktualisiert sich sofort.
+            </p>
+            <ul class="checklist">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Übergeordnete Zielobjektkategorien automatisch einbeziehen</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Suche über Kennung, Titel, Text, Gefährdung oder Tag – mit <kbd>Strg</kbd>+<kbd>K</kbd></span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Filter bleiben beim nächsten Besuch erhalten</span></li>
+            </ul>
+          </div>
+          <div class="split-media">
+            <div class="frame">
+              <button class="shot-btn" type="button" aria-label="Screenshot vergrößern">
+                <img src="media/screens/filter-zielobjekte.webp" width="1400" height="742" loading="lazy"
+                     alt="Filter nach Zielobjektkategorie Führungskräfte mit einbezogenen übergeordneten Kategorien und gefilterter Trefferliste" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="split reverse reveal">
+          <div class="split-copy">
+            <span class="kicker">Listen &amp; Notizen</span>
+            <h2>Anforderungen sammeln, Gedanken festhalten</h2>
+            <p>
+              Markieren Sie Anforderungen per Stern und halten Sie Notizen direkt an der Anforderung fest.
+              Mehrere Listen nebeneinander, filterbar und als JSON-Datei austauschbar.
+            </p>
+            <ul class="checklist">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Eigene Listen, etwa für Arbeitsgruppen oder die Umsetzungsplanung</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Notizen je Liste, sichtbar in der Trefferliste</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Export und Import – ohne Cloud, ohne Konto</span></li>
+            </ul>
+          </div>
+          <div class="split-media narrow">
+            <div class="frame">
+              <button class="shot-btn" type="button" aria-label="Screenshot vergrößern">
+                <img src="media/screens/detail-notizen.webp" width="700" height="512" loading="lazy"
+                     alt="Reiter Notizen in der Detailansicht einer Anforderung" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="split reveal">
+          <div class="split-copy">
+            <span class="kicker">Versionsvergleich</span>
+            <h2>Sehen, was sich geändert hat – Wort für Wort</h2>
+            <p>
+              Laden Sie zwei Katalogstände und der Explorer zeigt neue, geänderte und entfallene Anforderungen.
+              Geänderte Modalverben, Texte und Hilfestellungen werden im Detail hervorgehoben.
+            </p>
+            <ul class="checklist">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Änderungsübersicht je Anforderung</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Textvergleich mit Hervorhebung von Streichungen und Ergänzungen</span></li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Nach Änderungsart filtern</span></li>
+            </ul>
+          </div>
+          <div class="split-media narrow">
+            <div class="frame">
+              <button class="shot-btn" type="button" aria-label="Screenshot vergrößern">
+                <img src="media/screens/detail-aenderungen.webp" width="700" height="1196" loading="lazy"
+                     alt="Reiter Änderungen der Anforderung DEV.4.3 mit Modalverb-Änderung von MUSS zu SOLLTE und Wort-für-Wort-Textvergleich" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="split reverse reveal">
+          <div class="split-copy">
+            <span class="kicker">Kataloge</span>
+            <h2>Offizieller Katalog mit einem Klick</h2>
+            <p>
+              Der aktuelle Anwenderkatalog wird direkt aus der Stand-der-Technik-Bibliothek des BSI geladen.
+              Eigene oder ältere Kataloge im Grundschutz++-Schema laden Sie als Datei oder über eine URL.
+              Einmal geladen, steht der Katalog beim nächsten Besuch sofort bereit.
+            </p>
+          </div>
+          <div class="split-media narrow">
+            <div class="frame">
+              <button class="shot-btn" type="button" aria-label="Screenshot vergrößern">
+                <img src="media/screens/kataloge-laden.webp" width="900" height="732" loading="lazy"
+                     alt="Dialog Katalog laden mit offizieller BSI-Quelle, URL-Eingabe und Dateiauswahl" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Datenschutz ============ -->
+    <section id="datenschutz" class="section privacy" aria-labelledby="privacy-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">Datenschutz by Design</span>
+          <h2 id="privacy-title">Ihre Daten bleiben bei Ihnen</h2>
+          <p>Der Explorer ist eine statische Webanwendung. Es gibt keinen Server, der Ihre Eingaben sieht.</p>
+        </div>
+        <div class="privacy-grid">
+          <div class="privacy-card reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-browser"/></svg></div>
+            <h3>Nur im Browser</h3>
+            <p>Suche, Filter und Vergleich laufen vollständig lokal. Kein Benutzerkonto, keine Anmeldung, keine Installation.</p>
+          </div>
+          <div class="privacy-card reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
+            <h3>Lokal gespeichert</h3>
+            <p>Kataloge, Listen, Notizen und Einstellungen liegen ausschließlich in der Datenbank Ihres Browsers (IndexedDB).</p>
+          </div>
+          <div class="privacy-card reveal">
+            <div class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-eye-off"/></svg></div>
+            <h3>Kein Tracking</h3>
+            <p>Keine Cookies, keine Analysedienste, keine Werbung. Verbindungen zu fremden Servern nur, wenn Sie selbst einen Katalog laden.</p>
+          </div>
+        </div>
+        <p class="privacy-note">Details in der <a href="#datenschutzerklaerung" data-legal>Datenschutzerklärung</a>.</p>
+      </div>
+    </section>
+
+    <!-- ============ Zielgruppen ============ -->
+    <section class="section" aria-labelledby="zielgruppen-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="kicker">Für wen</span>
+          <h2 id="zielgruppen-title">Gemacht für die Praxis der Informationssicherheit</h2>
+        </div>
+        <div class="audience-grid">
+          <article class="audience reveal">
+            <div class="audience-icon"><svg class="icon" aria-hidden="true"><use href="#i-person"/></svg></div>
+            <h3>Sicherheitsbeauftragte</h3>
+            <p>Relevante Anforderungen für Ihre Zielobjekte schnell eingrenzen und den Umsetzungsstand in Listen festhalten.</p>
+          </article>
+          <article class="audience reveal">
+            <div class="audience-icon"><svg class="icon" aria-hidden="true"><use href="#i-person-book"/></svg></div>
+            <h3>Auditorinnen und Auditoren</h3>
+            <p>Prüflisten zusammenstellen, Notizen während des Audits erfassen und Katalogänderungen im Blick behalten.</p>
+          </article>
+          <article class="audience reveal">
+            <div class="audience-icon"><svg class="icon" aria-hidden="true"><use href="#i-team"/></svg></div>
+            <h3>IT-Teams</h3>
+            <p>Verstehen, was konkret gefordert ist – mit Hilfestellungen und den Definitionen des BSI.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Abschluss ============ -->
+    <section class="section section-alt" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="final-cta reveal">
+          <img src="media/gse_logo.webp" alt="" width="72" height="72" loading="lazy" />
+          <h2 id="cta-title">Bereit, den Katalog zu erkunden?</h2>
+          <p>Einfach im Browser öffnen und den offiziellen Katalog laden – in weniger als einer Minute.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="https://app.grundschutz-explorer.de/">
+              App starten
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="btn btn-secondary" href="https://app.grundschutz-explorer.de/docs/manual/">
+              <svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>
+              Handbuch lesen
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tight" aria-label="Hinweis zum BSI">
+      <div class="container">
+        <p class="disclaimer">
+          Grundschutz++ Explorer ist ein unabhängiges Projekt und steht in keiner Verbindung zum Bundesamt für
+          Sicherheit in der Informationstechnik (BSI). Der Grundschutz++-Anwenderkatalog und die Begriffsdefinitionen stammen
+          aus der öffentlich zugänglichen
+          <a href="https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek">Stand-der-Technik-Bibliothek</a> des BSI und
+          stehen unter der Lizenz <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de">CC BY-SA 4.0</a>.
+          Die Rechte an diesen Inhalten liegen beim BSI.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a class="brand" href="./">
+            <img src="media/gse_logo.webp" alt="" width="34" height="34" loading="lazy" />
+            <span>Grundschutz++ Explorer</span>
+          </a>
+          <p>Den Anwenderkatalog Grundschutz++ im Browser durchsuchen, filtern und vergleichen.</p>
+        </div>
+        <nav aria-label="Produkt">
+          <h2>Produkt</h2>
+          <ul>
+            <li><a href="https://app.grundschutz-explorer.de/">App starten</a></li>
+            <li><a href="https://app.grundschutz-explorer.de/docs/manual/">Handbuch (PDF)</a></li>
+            <li><a href="#funktionen">Funktionen</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Projekt">
+          <h2>Projekt</h2>
+          <ul>
+            <li><a href="https://github.com/fwdotcom/grundschutz-explorer">GitHub</a></li>
+            <li><a href="https://github.com/fwdotcom/grundschutz-explorer/security/advisories/new">Sicherheitslücke melden</a></li>
+          </ul>
+        </nav>
+        <nav aria-label="Rechtliches">
+          <h2>Rechtliches</h2>
+          <ul>
+            <li><a href="#impressum" data-legal>Impressum</a></li>
+            <li><a href="#datenschutzerklaerung" data-legal>Datenschutz</a></li>
+            <li><a href="#lizenzen" data-legal>Lizenzen</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Frank Winter</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Rechtliche Hinweise als Dialog; ohne JavaScript erscheinen sie am Seitenende -->
+  <dialog id="impressum" class="legal-modal" aria-labelledby="impressum-title">
+    <div class="legal-modal-header">
+      <h2 id="impressum-title">Impressum</h2>
+      <button class="legal-modal-close" type="button" aria-label="Schließen" title="Schließen (Esc)">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <div class="legal-modal-body">
+      <h3>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz)</h3>
+      <p>
+        <strong>Frank Winter</strong><br />
+        Wilhelmstr. 5A<br />
+        03046 Cottbus<br />
+        E-Mail: <a href="mailto:studio@frankwinter.com">studio@frankwinter.com</a>
+      </p>
+
+      <h3>Haftung für Inhalte</h3>
+      <p>
+        Als Diensteanbieter bin ich gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich.
+        Nach §§ 8 bis 10 DDG bin ich als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen
+        oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+      </p>
+
+      <h3>Haftung für Links</h3>
+      <p>
+        Mein Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Deshalb kann ich für diese fremden Inhalte
+        keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+      </p>
+
+      <h3>Urheberrecht &amp; Open Source</h3>
+      <p>
+        Die von mir erstellten Inhalte und Werke auf diesen Seiten unterliegen dem Urheberrecht. Das Softwareprojekt Grundschutz++ Explorer
+        ist unter der freien <strong>MIT-Lizenz</strong> lizenziert.
+      </p>
+
+      <h3>Bezug zum Bundesamt für Sicherheit in der Informationstechnik (BSI)</h3>
+      <p>
+        Grundschutz++ Explorer ist ein unabhängiges Projekt und steht in keiner Verbindung zum Bundesamt für Sicherheit in der
+        Informationstechnik (BSI).
+      </p>
+      <p>
+        Der offizielle Grundschutz++-Anwenderkatalog und die Begriffsdefinitionen stammen aus der öffentlich zugänglichen
+        <a href="https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek">Stand-der-Technik-Bibliothek</a>
+        des BSI und stehen unter der Lizenz
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de">CC BY-SA 4.0</a>.
+        Sie werden unverändert angezeigt. Die Rechte an diesen Inhalten liegen beim BSI.
+      </p>
+
+      <h3>Keine Gewähr für die angezeigten Inhalte</h3>
+      <p>
+        Ich erstelle und pflege diese Anwendung mit größtmöglicher Sorgfalt, übernehme jedoch keine Gewähr für die Richtigkeit, Vollständigkeit
+        oder Aktualität der dargestellten Inhalte oder für Fehler bei ihrer maschinellen Darstellung. Die Nutzung erfolgt auf eigene Verantwortung.
+        Maßgeblich sind ausschließlich die amtlichen Veröffentlichungen des BSI.
+      </p>
+    </div>
+  </dialog>
+
+  <dialog id="datenschutzerklaerung" class="legal-modal" aria-labelledby="datenschutzerklaerung-title">
+    <div class="legal-modal-header">
+      <h2 id="datenschutzerklaerung-title">Datenschutzerklärung</h2>
+      <button class="legal-modal-close" type="button" aria-label="Schließen" title="Schließen (Esc)">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <div class="legal-modal-body">
+      <p class="legal-modal-note">
+        Diese Erklärung gilt für die Projektwebseite. Die Datenschutzerklärung der App finden Sie in der App über die Fußzeile.
+      </p>
+
+      <h3>1. Datenschutz auf einen Blick</h3>
+      <p>
+        Diese Projektwebseite ist eine statische Seite. Ich setze keine Cookies, verwende keine Analyse-, Tracking- oder Werbedienste
+        und binde keine Inhalte von fremden Servern ein; Schriften und Bilder werden von dieser Adresse ausgeliefert.
+      </p>
+
+      <h3>2. Verantwortlicher</h3>
+      <p>
+        Frank Winter, Wilhelmstr. 5A, 03046 Cottbus<br />
+        E-Mail: <a href="mailto:studio@frankwinter.com">studio@frankwinter.com</a>
+      </p>
+
+      <h3>3. Hosting via GitHub Pages</h3>
+      <p>
+        Diese Webseite wird als statische Seite über <strong>GitHub Pages</strong> bereitgestellt. Anbieter ist die GitHub Inc.,
+        88 Colin P Kelly Jr St, San Francisco, CA 94107, USA.
+      </p>
+      <p>
+        Beim Aufruf erfasst GitHub automatisch technische Server-Logfiles (u. a. IP-Adresse, Datum und Uhrzeit des Abrufs,
+        Browsertyp, Betriebssystem und Referrer-URL). Dies ist technisch erforderlich, um die Webseite sicher und stabil
+        bereitzustellen (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse an einer verlässlichen Bereitstellung).
+        Ich habe auf diese Logfiles keinen Zugriff. Weitere Informationen finden Sie in der
+        <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement">Datenschutzerklärung von GitHub</a>.
+      </p>
+
+      <h3>4. Lokale Speicherung</h3>
+      <p>
+        Wenn Sie über das Symbol in der Kopfzeile zwischen hellem und dunklem Design wechseln, speichert Ihr Browser diese Wahl
+        im lokalen Speicher (localStorage). Diese Einstellung verlässt Ihr Gerät nicht und kann jederzeit über die Einstellungen
+        Ihres Browsers gelöscht werden.
+      </p>
+
+      <h3>5. Externe Links</h3>
+      <p>
+        Diese Seite verlinkt auf externe Angebote, etwa die App, die GitHub-Projektseite, die Stand-der-Technik-Bibliothek des BSI
+        und Lizenztexte. Mit dem Aufruf eines solchen Links verlassen Sie diese Seite; es gelten die Datenschutzbestimmungen des
+        jeweiligen Anbieters.
+      </p>
+
+      <h3>6. Ihre Rechte als betroffene Person</h3>
+      <p>
+        Sie haben nach der Datenschutz-Grundverordnung (DSGVO) das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO),
+        Löschung (Art. 17 DSGVO) und Einschränkung der Verarbeitung (Art. 18 DSGVO) bezüglich etwaiger personenbezogener Daten sowie
+        das Recht auf Widerspruch (Art. 21 DSGVO) und das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren
+        (Art. 77 DSGVO). Bei Fragen zum Datenschutz können Sie mich jederzeit unter der oben angegebenen E-Mail-Adresse kontaktieren.
+      </p>
+    </div>
+  </dialog>
+
+  <dialog id="lizenzen" class="legal-modal" aria-labelledby="lizenzen-title">
+    <div class="legal-modal-header">
+      <h2 id="lizenzen-title">Lizenzen</h2>
+      <button class="legal-modal-close" type="button" aria-label="Schließen" title="Schließen (Esc)">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+    <div class="legal-modal-body">
+      <h3>Grundschutz++ Explorer</h3>
+      <p>
+        Die App und diese Projektwebseite sind freie Software unter der <strong>MIT-Lizenz</strong>.
+        Der Quellcode steht auf <a href="https://github.com/fwdotcom/grundschutz-explorer">GitHub</a>.
+      </p>
+      <pre class="license-text">MIT License
+
+Copyright (c) 2026 Frank Winter
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+
+      <h3>Katalogdaten des BSI</h3>
+      <p>
+        Der Grundschutz++-Anwenderkatalog und die Begriffsdefinitionen in App und Screenshots stammen aus der
+        <a href="https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek">Stand-der-Technik-Bibliothek</a> des
+        Bundesamts für Sicherheit in der Informationstechnik (BSI) und stehen unter der Lizenz
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de">Creative Commons BY-SA 4.0</a>.
+      </p>
+
+      <h3>Schrift: Open Sans</h3>
+      <p>
+        Copyright 2020 The Open Sans Project Authors
+        (<a href="https://github.com/googlefonts/opensans">github.com/googlefonts/opensans</a>).
+        Die Schrift steht unter der <strong>SIL Open Font License 1.1</strong> und wird von dieser Webseite selbst ausgeliefert.
+        Den vollständigen Lizenztext finden Sie in der Datei <a href="fonts/OFL.txt">OFL.txt</a>.
+      </p>
+
+      <h3>Symbole: Lucide</h3>
+      <p>
+        Ein Teil der Symbole ist <a href="https://lucide.dev/">Lucide</a> nachempfunden und steht unter der <strong>ISC-Lizenz</strong>.
+      </p>
+    </div>
+  </dialog>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Screenshot">
+    <button class="icon-btn" type="button" aria-label="Schließen" title="Schließen">
+      <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+    </button>
+    <figure>
+      <img alt="" />
+      <figcaption></figcaption>
+    </figure>
+  </dialog>
+</body>
+</html>

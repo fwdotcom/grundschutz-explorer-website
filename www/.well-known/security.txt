@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Frank Winter
+# SPDX-License-Identifier: MIT
+#
+# Sicherheitskontakt für den Grundschutz++ Explorer (RFC 9116).
+# Expires spätestens nach einem Jahr erneuern.
+
+Contact: https://github.com/fwdotcom/grundschutz-explorer/security/advisories/new
+Contact: mailto:studio@frankwinter.com
+Expires: 2027-09-24T22:00:00.000Z
+Preferred-Languages: de, en
+Canonical: https://www.grundschutz-explorer.de/.well-known/security.txt
