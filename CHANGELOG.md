@@ -2,6 +2,12 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
+## [1.0.3] – 2026-09-29
+
+### Geändert
+
+- Screenshots für App-Version 1.1.8 geändert.
+
 ## [1.0.2] – 2026-09-29
 
 ### Neu
