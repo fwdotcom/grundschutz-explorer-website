@@ -2,8 +2,9 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
-## [Unreleased]
+## [1.0.1] – 2026-09-29
 
+- Handbuch-Links (jetzt app.grundschutz-explorer.de/manual) aktualisiert
 
 ## [1.0.0] – 2026-09-29
 
