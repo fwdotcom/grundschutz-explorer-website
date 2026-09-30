@@ -2,7 +2,7 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
-## [Unveröffentlicht]
+## [1.0.6] – 2026-09-30
 
 ### Geändert
 
