@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
+## [Unveröffentlicht]
+
+### Geändert
+
+- Die Screenshots erzeugt wieder dieses Repo (Release-Schritt `screenshots`, Szenen in `scripts/release/project/`); sie liegen unter `www/media/screens/` und werden nicht mehr von app.grundschutz-explorer.de geladen. Aufgenommen wird die veröffentlichte App, das App-Repo wird dafür nicht gebraucht. Nur Screenshots: `python scripts/release/release.py --only screenshots`.
+- Workflow `release.yml` heißt jetzt `deploy.yml` („Deploy“).
+
 ## [1.0.5] – 2026-09-30
 
 - Umstellung auf modulares Release-Script

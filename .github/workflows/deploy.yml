@@ -1,15 +1,16 @@
 # SPDX-FileCopyrightText: 2026 Frank Winter
 # SPDX-License-Identifier: MIT
 #
-# Veröffentlicht die Projektwebseite (Verzeichnis www/) über GitHub Pages.
+# Deployt die Projektwebseite (Verzeichnis www/) über GitHub Pages: bei jedem veröffentlichten Release
+# und manuell über „Run workflow“ (Stand des gewählten Branches).
 # Voraussetzung: Settings → Pages → Source „GitHub Actions“.
 
-name: Release
+name: Deploy
 
 on:
   release:
     types: [published]
-  # Manuelles Neu-Deployment des aktuellen Stands (z.B. nach Änderung der Pages-Einstellungen)
+  # Manuelles Deployment, z. B. nach neuen Screenshots oder Änderung der Pages-Einstellungen
   workflow_dispatch:
 
 permissions:

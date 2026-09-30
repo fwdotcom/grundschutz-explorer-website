@@ -21,3 +21,10 @@ file = "CHANGELOG.md"
 
 [security_txt]
 file = "www/.well-known/security.txt"
+
+[screenshots]
+# Aufgenommen wird die veröffentlichte App; zum Testen einer lokalen Instanz RELEASE_SCREENSHOTS_URL setzen
+url = "https://app.grundschutz-explorer.de/"
+scenes = "project/scenes.py"
+# Das Manifest liegt bei den Bildern; neue Szenen in project/scenes.py ergänzen
+jobs = [{ name = "website", out_dir = "www/media/screens", manifest = "www/media/screens/manifest.json" }]
