@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 Frank Winter
+# SPDX-License-Identifier: MIT
+#
+# Projektkonfiguration der Release-Schritte (Projektwebsite des Grundschutz++ Explorers).
+# Jeder Schritt unter steps/ liest den Abschnitt, der seinem Dateinamen ohne Nummer entspricht
+# (steps/30-security-txt.py → [security_txt]). Pfade sind relativ zum Projektordner.
+
+# Projektordner, relativ zu dieser Datei
+root = "../.."
+
+[release]
+# Tag des Releases, Platzhalter {version}; erscheint in der Abschlussmeldung
+tag = "v{version}"
+
+[version]
+# Die Version steht nur im Changelog: der Schritt prüft nur das Format
+files = []
+
+[changelog]
+file = "CHANGELOG.md"
+
+[security_txt]
+file = "www/.well-known/security.txt"

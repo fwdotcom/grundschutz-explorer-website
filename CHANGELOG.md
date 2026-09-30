@@ -2,6 +2,18 @@
 
 Alle nennenswerten Änderungen an der Projektwebseite des Grundschutz++ Explorers.
 
+## [1.0.5] – 2026-09-30
+
+- Umstellung auf modulares Release-Script
+
+### Geändert
+
+- Die Screenshots erzeugt jetzt das Release der App; die Seite lädt sie von app.grundschutz-explorer.de/media/website/, welche Bilder sie braucht, legt `www/media/screens/manifest.json` fest.
+
+### Entfernt
+
+- Skript `scripts/capture-screenshots.mjs` und die Screenshots unter `www/media/screens/`.
+
 ## [1.0.4] – 2026-09-30
 
 ### Geändert

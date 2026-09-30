@@ -2,56 +2,37 @@
 
 ## Release vorbereiten
 
-`release.py` bereitet ein Release der Projektwebseite vor:
-
-1. Version eintragen: In `CHANGELOG.md` wird `## [Unveröffentlicht]` zu `## [<VERSION>] – <Datum>`. Das
-   Changelog ist maßgeblich für die aktuelle Version. Außerdem wird `version` in `scripts/package.json` gesetzt.
-2. `Expires` in `www/.well-known/security.txt` auf heute + 1 Jahr setzen.
-3. Screenshots neu aufnehmen (siehe unten); fehlt `node_modules`, wird vorher `npm install` ausgeführt.
-
 ```sh
-python scripts/release.py 1.1.0
-python scripts/release.py 1.1.0 --keine-screenshots
+python scripts/release/release.py 1.1.0
 ```
 
-Committet, getaggt und veröffentlicht wird nicht. Danach die Änderungen prüfen, committen und das Release
-`v<VERSION>` auf GitHub veröffentlichen; der Workflow `release.yml` deployt die Seite über GitHub Pages.
+Prüft die Version, schließt den Abschnitt „Unveröffentlicht“ im Changelog ab und setzt `Expires` in
+`www/.well-known/security.txt` auf heute + 1 Jahr. Committet, getaggt und veröffentlicht wird nicht. Einzelheiten:
+[release/README.md](release/README.md).
 
 ## Screenshots der App
 
-`capture-screenshots.mjs` erzeugt die Screenshots in `www/media/screens/` aus der laufenden App
-([app.grundschutz-explorer.de](https://app.grundschutz-explorer.de)).
+Die Screenshots erzeugt das Release der App (Schritt `scripts/release/steps/50-screenshots.py` mit den Szenen
+aus `scripts/release/project/scenes.py` im App-Repo). Sie liegen unter
+`https://app.grundschutz-explorer.de/media/website/` und werden von dort eingebunden; für neue Screenshots muss die
+Website deshalb nicht neu deployt werden.
 
-```sh
-cd scripts
-npm install                         # Playwright, sharp und Chromium
-npm run screenshots                 # alle Screenshots
-npm run screenshots -- oberflaeche  # nur einzelne (Namen ohne .webp)
+Welche Bilder die Website braucht, legt sie in `www/media/screens/manifest.json` fest:
+
+```json
+{
+  "schema": 1,
+  "shots": [{ "file": "oberflaeche.webp", "scene": "website-oberflaeche", "width": 1920, "height": 1200 }]
+}
 ```
 
-Verfügbare Screenshots: `oberflaeche`, `filter-zielobjekte`, `detail-notizen`, `detail-aenderungen`,
-`kataloge-laden`.
+- `file`: Dateiname unter `media/website/` (Kleinbuchstaben, Ziffern, Bindestriche, `.webp`)
+- `scene`: Ansicht der App; verfügbar sind `website-oberflaeche`, `website-filter-zielobjekte`,
+  `website-detail-notizen`, `website-detail-aenderungen` und `website-kataloge-laden`. Eine neue Ansicht muss im
+  App-Repo als Szene ergänzt werden.
+- `width`, `height`: Bildmaße in Pixeln, wie sie in `www/index.html` an den `<img>` stehen. Passt ein Bild nicht
+  dazu, bricht das Release der App ab.
 
-### Ablauf
-
-1. Der aktuelle Grundschutz++-Anwenderkatalog wird aus der
-   [Stand-der-Technik-Bibliothek](https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek) des BSI geladen.
-   Daraus entsteht zusätzlich ein älterer Stand, in dem DEV.4.3 noch MUSS ist und einen anderen Text hat
-   (für den Reiter „Änderungen“).
-2. Für jeden Screenshot startet ein frischer Browserkontext. Katalog, Listen („Audit 2026“, „Entwicklungsteam“),
-   Notizen und Ansichtszustand (Filter, aufgeklappte Äste, Auswahl) werden direkt in die IndexedDB der App
-   geschrieben, danach wird die Seite neu geladen.
-3. Der Ausschnitt wird aufgenommen und als WebP gespeichert.
-4. Die Bildmaße werden in `www/index.html` (`width`/`height` der `<img>`) nachgetragen.
-
-### Umgebungsvariablen
-
-| Variable  | Bedeutung                                                            |
-| --------- | -------------------------------------------------------------------- |
-| `APP_URL` | Adresse der App (Standard: `https://app.grundschutz-explorer.de/`)   |
-| `HEADED`  | `1` startet den Browser sichtbar, zum Nachvollziehen                 |
-
-### Hinweise
-
-- Das Skript nutzt die Speicherstruktur (`js/storage.js`, Einstellungsschlüssel) und CSS-Selektoren der App.
-  Ändern sich diese, muss es angepasst werden.
+Das App-Release liest das Manifest von der veröffentlichten Website. Eine Änderung am Manifest wirkt also erst,
+wenn die Website deployt ist und danach die App ein Release macht. Zum Testen vorher lässt sich das lokale
+Manifest im App-Repo mit `RELEASE_SCREENSHOTS_WEBSITE_MANIFEST=<Pfad>` angeben.

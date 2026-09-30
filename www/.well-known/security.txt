@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: MIT
 #
 # Sicherheitskontakt für den Grundschutz++ Explorer (RFC 9116).
-# Expires spätestens nach einem Jahr erneuern.
+# Expires setzt der Release-Schritt scripts/release/steps/30-security-txt.py auf heute + 1 Jahr.
 
 Contact: https://github.com/fwdotcom/grundschutz-explorer/security/advisories/new
 Contact: mailto:studio@frankwinter.com
-Expires: 2027-09-29T22:00:00.000Z
+Expires: 2027-09-30T00:00:00.000Z
 Preferred-Languages: de, en
 Canonical: https://www.grundschutz-explorer.de/.well-known/security.txt
