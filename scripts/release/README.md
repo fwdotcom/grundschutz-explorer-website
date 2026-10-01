@@ -53,7 +53,7 @@ also auch alle anderen Änderungen darauf).
 | `10-version`      | Format der Version prüfen (sie steht nur im Changelog, `files` ist deshalb leer)  |
 | `20-changelog`    | Abschnitt „Unveröffentlicht“ abschließen; eine ältere Version wird abgelehnt      |
 | `30-security-txt` | `Expires` in `www/.well-known/security.txt` auf heute + 1 Jahr setzen             |
-| `50-screenshots`  | Screenshots der App nach `www/media/screens/manifest.json` aufnehmen              |
+| `40-screenshots`  | Screenshots der App nach `www/media/screens/manifest.json` aufnehmen              |
 
 Wie im App-Repo arbeitet `release.py` die Dateien `steps/NN-name.py` in Nummernfolge ab (wie `run-parts` unter
 Linux). Ein Schritt lässt sich einzeln aufrufen, abschalten (umbenennen, z. B. in `.py.off`) oder ergänzen; seine

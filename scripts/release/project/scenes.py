@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Frank Winter
 # SPDX-License-Identifier: MIT
 """
-Szenen für die Screenshots der Website (projektspezifisch, für steps/50-screenshots.py).
+Szenen für die Screenshots der Website (projektspezifisch, für steps/40-screenshots.py).
 
 Eine Szene stellt einen Zustand der App her und liefert den Ausschnitt als PNG. Jede Szene beginnt in einem
 frischen Browserkontext, schreibt ihre Testdaten direkt in die IndexedDB der App (über js/storage.js) und lädt neu;
@@ -256,7 +256,7 @@ def website_detail_notizen(env):
     }
     with website(env, viewport={"width": 1280, "height": 800}, scale=2, settings=settings) as s:
         s.page.click("#tab-notes")
-        s.page.wait_for_selector(".notes-panel")
+        s.page.wait_for_selector(".notes-text")
         s.settle()
         detail = s.box("#detail-pane")
         note = s.box(".notes-text")
@@ -265,7 +265,7 @@ def website_detail_notizen(env):
         )
 
 
-# Reiter „Änderungen“ von DEV.4.3 im Vergleich mit der Vergleichsversion, bis unter den Textvergleich
+# Reiter „Änderungen“ von DEV.4.3 im Vergleich mit der Vergleichsversion, Kopf eingeklappt, bis unter den Textvergleich
 def website_detail_aenderungen(env):
     settings = {
         "comparison_catalog_id": COMPARISON_ID,
@@ -275,6 +275,9 @@ def website_detail_aenderungen(env):
     with website(env, viewport={"width": 1280, "height": 1200}, scale=2, settings=settings) as s:
         s.page.click("#tab-diff")
         s.page.wait_for_selector("#detail-tabpanel .stack > .card")
+        # Kopf einklappen: Pfadleiste und Hinweise ausblenden
+        s.page.click(".detail-head-toggle")
+        s.page.wait_for_selector('.detail-head-toggle[aria-expanded="false"]')
         s.settle()
         detail = s.box("#detail-pane")
         card = s.box("#detail-tabpanel .stack > .card:nth-of-type(2)")

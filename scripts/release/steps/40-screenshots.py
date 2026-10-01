@@ -34,7 +34,7 @@ Konfiguration [screenshots]:
 Per Umgebung: RELEASE_SCREENSHOTS_URL=<Adresse>, RELEASE_SCREENSHOTS_ONLY=website,
 RELEASE_SCREENSHOTS_<NAME>_MANIFEST=<Pfad>, RELEASE_SCREENSHOTS_<NAME>_OUT_DIR=<Ordner> (NAME = name des Auftrags).
 
-Aufruf:  python scripts/release/steps/50-screenshots.py
+Aufruf:  python scripts/release/steps/40-screenshots.py
 """
 
 from __future__ import annotations

@@ -3,8 +3,8 @@
   "shots": [
     { "file": "oberflaeche.webp", "scene": "website-oberflaeche", "width": 1920, "height": 1200 },
     { "file": "filter-zielobjekte.webp", "scene": "website-filter-zielobjekte", "width": 1954, "height": 1034 },
-    { "file": "detail-notizen.webp", "scene": "website-detail-notizen", "width": 762, "height": 786 },
-    { "file": "detail-aenderungen.webp", "scene": "website-detail-aenderungen", "width": 762, "height": 1632 },
+    { "file": "detail-notizen.webp", "scene": "website-detail-notizen", "width": 762, "height": 810 },
+    { "file": "detail-aenderungen.webp", "scene": "website-detail-aenderungen", "width": 762, "height": 1516 },
     { "file": "kataloge-laden.webp", "scene": "website-kataloge-laden", "width": 1152, "height": 934 }
   ]
 }
